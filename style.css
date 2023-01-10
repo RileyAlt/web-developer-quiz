@@ -37,6 +37,21 @@
     align-content: space-between;  
 }
 
-.body {
-   
+header {
+    text-align: center;
+}
+
+main {
+    text-align: center;
+}
+
+.warning {
+    font-style: italic;
+    font-size: 15px;
+    padding: -30px;
+}
+
+.question-align  {
+    font-size: 150px;
+    color: blueviolet;
 }
