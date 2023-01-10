@@ -4,25 +4,46 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Wrestling Quiz</title>
+        <title>Web Developer Quiz</title>
         <link rel="stylesheet" href="./style.css">
     </head>
     <body>
+
+        <div class="main-actions">
+            <p id="timer"></p>
+            <button id="highscore-button" >View Highscores</button>
+        </div>
+
         <header>
-            <h1 id="heading"> Test your Wreslting Knowledge</h1>
+            <h1 id="heading"> Test your Developer Knowledge</h1>
         </header>
+
         <main>
+
             <div id="landing-screen">
-                <button id="start-quiz-button" type="button">Start Quiz</button>
+                <button id="start-quiz-button">Start Quiz</button>
             </div>
+    
             <div id="question-section">
                 <p id="question-text"></p>
                 <div id="question-buttons">
                     <!-- This div is automatically filled in our javascript -->
                 </div>
+                <p id="answer-text"></p>
+                
             </div>
-            <div class="quiz-buttons" id="quiz-buttons">
-                <button id="next-question-button">Next Question</button>
+
+            <div class="enter-name-screen" id="enter-name-screen">
+                <p id="enter-name-score-summary"></p>
+                <p> Enter your initials to be on the leaderboard.</p>
+                <input id="enter-name-textfield" placeholder="Enter your name"/>
+                <button id="enter-name-submit-button">Submit</button>
+            </div>
+
+            <div class="leaderboard-screen" id="leaderboard-screen">
+                <!-- This will get auto filled from javascript -->
+                <p> High scores</p>
+                <ol id="score-list"></ol>
             </div>
         </main>
         <script src="./script.js"></script>

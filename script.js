@@ -1,21 +1,66 @@
-var startQuizButton = document.querySelector('#start-quiz-button');
-var nextQuestionButton = document.querySelector('#next-question-button');
-var currentScore = 0; 
+var startQuizButton = document.getElementById("start-quiz-button");
+var enterNameScreen = document.getElementById("enter-name-screen");
+var leaderboardScreen = document.getElementById("leaderboard-screen");
+var enterNameSubmitButton = document.getElementById("enter-name-submit-button");
+var timerText = document.getElementById("timer")
+var counterInterval;
+var answerText = document.getElementById("answer-text");
+var viewHighscoresButton = document.getElementById("highscore-button");
+var currentScore = 100; 
 
 var currentQuestionIndex = 0;
-
 
 // QUESTIONS is an ARRAY with elements of type OBJECT
 const QUESTIONS = [
     {
         question: "Which of the following is the top most heading on the page?", 
-        answers: ["h1", "h2", "h3", "h4", "h5", "h6"],
+        answers: ["h1", "h3", "h6", "h10"],
         correct: "h1"
     },
     {
-        question: "Who is the flyest friend", 
-        answers: ["T-rev", "Moos"],
-        correct: "T-rev"
+        question: "What option is a CSS selector for ID?", 
+        answers: ['start-quiz-button', '#start-quiz-button', "leaderboard-screen", "none of the above" ],
+        correct: "'#start-quiz-button'"
+    },
+    {
+        question: "Which of the following is used for styling?", 
+        answers: ["Java", "HTML", "Java-Script", "CSS"],
+        correct: "CSS"
+    },
+    {
+        question: "WWhich of the following would you use for an ordered List", 
+        answers: ["ol", "il", "ul", "dl" ],
+        correct: "ol"
+    },
+    {
+        question: "Which of the following is a valid CSS unit?", 
+        answers: ["mx", "bi", "fx", "px"],
+        correct: "px"
+    },
+    {
+        question: "Which of the following elements brings you to a new page?", 
+        answers: ["p", "br", "link", "a"],
+        correct: "a"
+    },
+    {
+        question: "Which of the following is not a number?", 
+        answers: ["4", "3.17", "'pi'", "3.14" ],
+        correct: "'pi'"
+    },
+    {
+        question: "What is `z-index` refer to?", 
+        answers: ["Order of size", "Order of overlapping", "Neither", "All of the above"],
+        correct: "Order of overlapping"
+    },
+    {
+        question: "When a developer leaves notes in their code, this is called what??", 
+        answers: ["Replies", "Comments", "Likes", "Subscribe"],
+        correct: "Comments"
+    },
+    {
+        question: "Which tool allows you to easily colloborate on code?", 
+        answers: ["get", "git", "mit", "bit"],
+        correct: "git"
     }
 ];
 
@@ -23,40 +68,89 @@ const QUESTIONS = [
 startQuizButton.addEventListener('click',  function (event) {
     document.getElementById('landing-screen').style.display = 'none';
     showCurrentQuestion();
+    counterInterval = setInterval(decromentScoreByOne, 1000)
 });
 
-//starts the next question
-nextQuestionButton.addEventListener('click',  function (event) {
-    questionNumber++;
-    showCurrentQuestion();
+//View Highscores
+viewHighscoresButton.addEventListener('click', function(event) {
+    const highScores = JSON.parse(localStorage.getItem("highScores") || "[]");
+    leaderboardScreen.style.display = 'block';
+
+    var scoreList = document.getElementById("score-list");
+
+    for (const scoreRecord of highScores) {
+        var li = document.createElement('li');
+        li.textContent = `${scoreRecord.name} ... ${scoreRecord.score}`;
+        scoreList.appendChild(li);
+    }
 });
 
-function answerGuessed(userGuess) {
-    var correctAnswer = QUESTIONS[currentQuestionIndex].correct;
+// When they hit enter on the "Enter Name" screen
+enterNameSubmitButton.addEventListener('click',  function (event) {
+    const name = document.getElementById("enter-name-textfield").value;
+    
+    // Save the leaderboard into local storage
+    const highScores = JSON.parse(localStorage.getItem("highScores") || "[]");
 
-    // TODO: FILL THIS OUT
-    if (userGuess == correctAnswer) {
-        // Add 1 to the user score
-        currentScore++;
-    } else {
 
+    highScores.push({ name: name, score: currentScore });
+    //sort highscores
+    function compareHighScoreRecords( a, b ) {
+        if ( a.score > b.score ){
+          return -1;
+        }
+        if ( a.score < b.score ){
+          return 1;
+        }
+        return 0;
     }
 
-    // Finally, go to the next question
-    // TODO: NEED TO HANDLE WHEN AT LAST QUESTION
-    var numberOfTotalQuestions = QUESTIONS.length; // TODO;
+    highScores.sort( compareHighScoreRecords );
+
+    localStorage.setItem("highScores", JSON.stringify(highScores));
+
+    // Start by hiding the enter name screen
+    enterNameScreen.style.display = 'none';
+
+    // Now show the leaderboard screen
+    leaderboardScreen.style.display = 'block';
+
+    var scoreList = document.getElementById("score-list");
+
+    for (const scoreRecord of highScores) {
+        var li = document.createElement('li');
+        li.textContent = `${scoreRecord.name} ... ${scoreRecord.score}`;
+        scoreList.appendChild(li);
+    }
+});
+
+var answerTextClearTimeout; 
+// When they click an answer
+function answerGuessed(userGuess) {
+    var correctAnswer = QUESTIONS[currentQuestionIndex].correct;
+    //Prevents clearing out the right or wrong answer before we are ready
+    if (answerTextClearTimeout){
+        clearTimeout(answerTextClearTimeout);
+    }
+    if (userGuess == correctAnswer) {
+        answerText.textContent = "Correct!!!";
+    } else {
+        currentScore -= 10;
+        timerText.textContent=`Current Score: ${currentScore}`;
+        answerText.textContent = "Wrong!!!";
+    }
+
+    answerTextClearTimeout = setTimeout(function () {
+        answerText.textContent = "";
+    },2000);
+
+    // Finally, go to the next question unless we are at the last question
+    var numberOfTotalQuestions = QUESTIONS.length; 
     var currentQuestionNumber = currentQuestionIndex + 1; // The +1 is because the index starts at 0, so if we are on question 2 of 2, currentQuestionIndex is 1.
 
     if (currentQuestionNumber == numberOfTotalQuestions) {
-        // At this point, we have just answered the last question, so do the following:
-      
-        // 1Hides the last question
-        document.getElementById('question-text').textContent = `Your Test is complete. You scored ${currentScore} out of ${numberOfTotalQuestions}`;
-      
-        removeCurrentButtons();
-
-        // 3. Show the leaderboard screen
-
+        endQuiz();
+        
     } else {
         // GO TO NEXT QUESTION
         currentQuestionIndex++;
@@ -67,8 +161,8 @@ function answerGuessed(userGuess) {
 // Removes last questions answers
 function removeCurrentButtons() {
     var currentButtons = document.getElementsByClassName("question-answer-button");
-    for (var i = 0; i < currentButtons.length; i++) {
-        currentButtons[i].style.display = 'none';
+    for (var i = currentButtons.length - 1; i >= 0; i--) {
+        currentButtons[i].remove();
     }
 }
 
@@ -77,7 +171,6 @@ function showCurrentQuestion() {
     const currentQuestion = QUESTIONS[currentQuestionIndex];
     document.getElementById('question-text').textContent = currentQuestion.question;
     var butonContainer = document.getElementById('question-buttons');
-
 
     removeCurrentButtons()
 
@@ -90,14 +183,23 @@ function showCurrentQuestion() {
     } 
 }
 
+// Ends quiz
+function endQuiz() {
+    // Hides the question section
+    removeCurrentButtons();
+    document.getElementById('question-section').style.display = 'none';
 
- // var myAge = 21; NUMBER
-    // var myName = 'Riley'; STRING (text)
-    // var myFavNUmbers = [1, 5, 9, 11, 15]; ARRAY of numbers
-    // var myFavPeople = ["Trev", "Moilly"]; ARRAY of strings
-    // myFavNumbers.length => 5
-    // myFavPeople.length => 2
-    // var aboutMe = {
-    //     favoriteSport: "Wrestling",
-    //     favoriteMovie: "Hangover"
-    // }; OBJECT (arbitrary shape)
+    // Show the enter name screen
+    enterNameScreen.style.display = 'block';
+    document.getElementById('enter-name-score-summary').textContent = `Your Test is complete. You scored ${currentScore}`;
+    clearInterval(counterInterval);
+}
+
+
+function decromentScoreByOne(){
+    currentScore--;
+    timerText.textContent=`Current Score: ${currentScore}`;
+    if(currentScore === 0){
+        endQuiz();
+    }
+};

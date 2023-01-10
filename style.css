@@ -6,3 +6,37 @@
 .quiz-buttons {
     display: none;
 }
+
+.enter-name-screen {
+    display: none;
+}
+
+
+.leaderboard-screen {
+    display: none;
+}
+
+.question-answer-button {
+    background-color: blue;
+    color: white;
+    margin: 20px;
+    display: block;
+    padding: 20px;
+}
+
+.question-answer-button:hover {
+    background-color: darkblue;
+}
+
+.main-actions {
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    align-content: space-between;  
+}
+
+.body {
+   
+}
